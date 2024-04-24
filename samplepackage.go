@@ -2,7 +2,9 @@ package sample
 
 import (
 	"errors"
+	"io/ioutil"
 	"os"
+	"os/exec"
 )
 
 // Add takes two integers and returns their sum.
@@ -87,3 +89,101 @@ func WriteFile(fileName string, content []byte) error {
 
 	return nil // Write operation successful
 }
+
+func UpdateFile(fileName string, newContent []byte) error {
+    // Check if fileName is empty
+    if fileName == "" {
+        return errors.New("file name cannot be empty")
+    }
+
+    // Check if newContent is empty
+    if len(newContent) == 0 {
+        return errors.New("new content cannot be empty")
+    }
+
+    // Read the existing content of the file
+    existingContent, err := ioutil.ReadFile(fileName)
+    if err != nil {
+        return err // Error reading the file
+    }
+
+    // Append the new content to the existing content
+    updatedContent := append(existingContent, newContent...)
+
+    // Write the updated content back to the file
+    err = ioutil.WriteFile(fileName, updatedContent, 0644)
+    if err != nil {
+        return err // Error writing to the file
+    }
+
+    return nil // Update operation successful
+}
+
+
+func RenameFile(oldName, newName string) error {
+    // Check if oldName or newName is empty
+    if oldName == "" {
+        return errors.New("old file name cannot be empty")
+    }
+    if newName == "" {
+        return errors.New("new file name cannot be empty")
+    }
+
+    // Rename the file
+    err := os.Rename(oldName, newName)
+    if err != nil {
+        return err // Error renaming the file
+    }
+
+    return nil // Rename operation successful
+}
+
+func DeleteFile(fileName string) error {
+    // Check if fileName is empty
+    if fileName == "" {
+        return errors.New("file name cannot be empty")
+    }
+
+    // Attempt to remove the file
+    err := os.Remove(fileName)
+    if err != nil {
+        return err // Error deleting the file
+    }
+
+    return nil // Deletion operation successful
+}
+
+func MoveFile(oldPath, newPath string) error {
+    // Check if oldPath or newPath is empty
+    if oldPath == "" {
+        return errors.New("old path cannot be empty")
+    }
+    if newPath == "" {
+        return errors.New("new path cannot be empty")
+    }
+
+    // Move the file
+    err := os.Rename(oldPath, newPath)
+    if err != nil {
+        return err // Error moving the file
+    }
+
+    return nil // Move operation successful
+}
+
+func CopyFile(source, destination string) error {
+    cmd := exec.Command("cmd", "/c", "Xcopy", source, destination)
+    if err := cmd.Run(); err != nil {
+        return err
+    }
+    return nil
+}
+
+
+
+
+
+
+
+
+
