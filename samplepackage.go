@@ -153,23 +153,57 @@ func DeleteFile(fileName string) error {
     return nil // Deletion operation successful
 }
 
+// func MoveFile(oldPath, newPath string) error {
+//     // Check if oldPath or newPath is empty
+//     if oldPath == "" {
+//         return errors.New("old path cannot be empty")
+//     }
+//     if newPath == "" {
+//         return errors.New("new path cannot be empty")
+//     }
+
+//     // Move the file
+//     err := os.Rename(oldPath, newPath)
+//     if err != nil {
+//         return err // Error moving the file
+//     }
+
+//     return nil // Move operation successful
+// }
+
 func MoveFile(oldPath, newPath string) error {
-    // Check if oldPath or newPath is empty
-    if oldPath == "" {
-        return errors.New("old path cannot be empty")
+    // Check if the source file exists
+    _, err := os.Stat(oldPath)
+    if err != nil {
+        if os.IsNotExist(err) {
+            return fmt.Errorf("source file '%s' does not exist", oldPath)
+        }
+        return fmt.Errorf("error checking source file: %v", err)
     }
-    if newPath == "" {
-        return errors.New("new path cannot be empty")
+
+    // Check if the destination directory exists
+    _, err = os.Stat(newPath)
+    if err != nil {
+        if os.IsNotExist(err) {
+            // If the destination directory does not exist, create it
+            err := os.MkdirAll(newPath, 0755)
+            if err != nil {
+                return fmt.Errorf("error creating destination directory: %v", err)
+            }
+        } else {
+            return fmt.Errorf("error checking destination directory: %v", err)
+        }
     }
 
     // Move the file
-    err := os.Rename(oldPath, newPath)
+    err = os.Rename(oldPath, newPath)
     if err != nil {
-        return err // Error moving the file
+        return fmt.Errorf("error moving file: %v", err)
     }
 
-    return nil // Move operation successful
+    return nil
 }
+
 
 func CopyFile(source, destination string) error {
     cmd := exec.Command("cmd", "/c", "Xcopy", source, destination)
